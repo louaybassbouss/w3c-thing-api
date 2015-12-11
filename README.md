@@ -16,7 +16,7 @@ interface ThingRequest {
 ## Interface `ThingFilter`
 
 ```webidl
-interface ThingFilter {
+dictionary ThingFilter {
     attribute DOMString? type;
     attribute ThingProximity? proximity;
     attribute DOMString? id;
@@ -25,7 +25,7 @@ interface ThingFilter {
 ```
 
 ## Interface `ThingProximity`
-
+                                                                                                                 
 ```webidl
 enum ThingProximity { 
     "local", 
