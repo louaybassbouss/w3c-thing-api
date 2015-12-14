@@ -13,6 +13,8 @@ interface ThingRequest {
 };
 ```
 
+A `ThingRequest` is the entry point in the Thing API to find things. It has a single method `start()` that starts the discovery or lookup according to the `ThingFilter` that is passed as input of the `ThingRequest` constructor. 
+
 ## Interface `ThingFilter`
 
 ```webidl
@@ -24,6 +26,12 @@ dictionary ThingFilter {
 };
 ```
 
+A `ThingFilter` is a dictionary that is passed as input to the `ThingRequest` constructor. It may be extended in the future with additional filter properties. The current supported filter properties are:
+* `type`: It is a url that identify the type of the thing e.g. `http://example.com/things#temperature`
+* `proximity`: It defines how to find the requested things. See ThingProximity Interface for more details about the possible values.
+* `id`: Each thing consists of a unique `id` (see attribute `Thing.id`). Using the `id` in the filter allows to find a Thing by its `id`. If `id` is set, all other filter parameters will be ignored.
+* `server`: It is the end point of the WoT directory where to look to Things. If `server` is set, the value of `proximity` must be `remote`.
+
 ## Interface `ThingProximity`
                                                                                                                  
 ```webidl
@@ -34,6 +42,12 @@ enum ThingProximity {
 };
 ```
 
+The `ThingProximity` is a enumaration about possible values for the `ThingFilter.proximity` attribute. The three values are currently supported:
+ 
+* `local`: It represents discovery in local networks (e.g. SSDP, mDNS/DNS-SD, ...)
+* `nearby`: It represents all discovery technologies where the physical location is considered (BLE, Audio Watermarking, ...)
+* `remote`: It represents lookup in WoT directories. The end point of the directory musst be supported.  
+
 ## Interface `Thing`
 
 ```webidl
@@ -42,7 +56,6 @@ interface Thing: EventTarget {
     readonly attribute DOMString id;
     readonly attribute DOMString type;
     readonly attribute DOMString name;
-    readonly attribute DOMString manufacturer;
     readonly attribute boolean reachable;
     attribute EventHandler onreachabilitychange;
     Promise<any> callAction(DOMString actionName, any parameter);
@@ -55,6 +68,21 @@ interface Thing: EventTarget {
 callback ThingEventListener = void (ThingEvent event);
 ```
 
+`Thing` is the main interface to interact with a thing. It consists of the following attributes and functions:
+* `id`: is a unique identifier of a Thing.
+* `type`: is the type of a thing. It is important to filter things by type (see `ThingFilter.type`).
+* `name`: the human readable name of the thing.
+* `reachable`: defines if the Thing is reachable or not. e.g. `reachable` is `false` when the control device (that runs an application using the Thing API) leaves the range of a BLE sensor and `true` if the device is in range.
+* `onreachabilitychange`: event handle to monitor reachability of the thing. It will be triggered each time the value of the `reachable` attribute changes.
+* `callAction()`: call an action defined in the thing description. 
+* `setProperty()`: set a new value for a property defined in the thing description.
+* `getProperty()`: get the value of a property defined in the thing description.
+* `addListener()`: add a new listener to an event defined in the thing description.
+* `removeListener()`: remove an already added event listener. 
+* `removeAllListeners()`: remove all listener registered for an event defined in the thing description.
+
+A `Thing` instance can be returned as a result of discovery (see `ThingRequest.start()`) or directly by using the Thing constructor that accepts a `ThingDescription` as input.
+
 ## Interface `ThingEvent`
 
 ```webidl
@@ -65,6 +93,11 @@ interface ThingEvent {
 }
 ```
 
+The `ThingEvent` is passed as input to the event listener added to a Thing. It consists of the following attributes:
+* `name`: the name of the event. It allows to distinct between different event types in the event handler.
+* `value`: the new value reported by the event.
+* `source`: the thing that fired the event.
+
 ## Interface `ThingDescription`
 
 ```webidl                              
@@ -72,6 +105,8 @@ dictionary ThingDescription {
     // Thing Description according to the JSON-LD TD spec.
 }                                      
 ```
+
+`ThingDescription` is a place holder for the JSON-LD spec of the Thing Description. 
 
 # Example
 
