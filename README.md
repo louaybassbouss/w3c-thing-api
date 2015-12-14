@@ -1,6 +1,6 @@
 # W3C Thing API
 
-The Thing API is an experimental API for Discovery, Provisioning and Control of Things in a [Web of Things](http://www.w3.org/WoT/). A thing may compromise of multiple sensors and/or actuators and a corresponding [Thing Description](http://www.w3.org/WoT/) that describes the properties, actions, events and metadata of the corresponding thing. The metadata includes also a set of protocol bindings. 
+The Thing API is an experimental API for Discovery, Provisioning and Control of Things in a [Web of Things](http://www.w3.org/WoT/). A thing may compromise of multiple sensors, actuators and a corresponding [Thing Description](http://www.w3.org/WoT/) that describes the properties, actions, events and metadata of the corresponding thing. The metadata includes also a set of protocol bindings. 
 
 # Interfaces
 
@@ -20,7 +20,7 @@ dictionary ThingFilter {
     attribute DOMString? type;
     attribute ThingProximity? proximity;
     attribute DOMString? id;
-    attribute DOMString? server;
+    attribute DOMString? server; 
 };
 ```
 
@@ -37,6 +37,7 @@ enum ThingProximity {
 ## Interface `Thing`
 
 ```webidl
+[Constructor(ThingDescription td)]
 interface Thing: EventTarget {
     readonly attribute DOMString id;
     readonly attribute DOMString type;
@@ -50,7 +51,7 @@ interface Thing: EventTarget {
     void addListener(DOMString eventName, ThingEventListener listener);
     void removeListener(DOMString eventName, ThingEventListener listener);
     void removeAllListeners(DOMString eventName);
-}          
+}
 callback ThingEventListener = void (ThingEvent event);
 ```
 
@@ -62,6 +63,14 @@ interface ThingEvent {
     readonly attribute any value;
     readonly attribute Thing source;
 }
+```
+
+## Interface `ThingDescription`
+
+```webidl                              
+dictionary ThingDescription {                 
+    // Thing Description according to the JSON-LD TD spec.
+}                                      
 ```
 
 # Example
